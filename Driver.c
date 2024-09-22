@@ -22,10 +22,8 @@ DriverEntry(
     _In_ PUNICODE_STRING    RegistryPath
 )
 {
-    // Allocate the driver configuration object
     WDF_DRIVER_CONFIG config;
 
-    // Print "Hello World" for DriverEntry
     KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "ISA IO: Initialization...\n"));
 
     // Initialize the driver configuration object to register the
@@ -46,11 +44,11 @@ DriverEntry(
 }
 
 VOID HandleIOCTL(
-    _In_ WDFQUEUE Queue,   // Объект очереди, применения ему я пока не нашёл
-    _In_ WDFREQUEST Request, // Из этого объекта мы извлекаем входной и выходной буферы
+    _In_ WDFQUEUE Queue,
+    _In_ WDFREQUEST Request,
     _In_ size_t OutputBufferLength,
     _In_ size_t InputBufferLength,
-    _In_ ULONG IoControlCode // IOCTL код, с которым к устройству обратились
+    _In_ ULONG IoControlCode
 )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -72,7 +70,6 @@ VOID HandleIOCTL(
         PVOID buffer = NULL;
         PVOID outputBuffer = NULL;
 
-        // Получаем указатель на буфер с входными данными
         status = WdfRequestRetrieveInputBuffer(
             Request,
             sizeof(struct IsaIoRequestRead),
@@ -80,8 +77,6 @@ VOID HandleIOCTL(
             &length
         );
 
-        // Проверка на то, что мы получили буфер и он соотвествует ожидаемому размеру
-        // Очень важно делать такие проверки, чтобы не положить систему :)
         if (length != sizeof(struct IsaIoRequestRead) || !buffer)
         {
             status = STATUS_INVALID_DEVICE_REQUEST;
@@ -90,7 +85,6 @@ VOID HandleIOCTL(
 
         request_data = *((struct IsaIoRequestRead*)buffer);
 
-        // Получаем указатель на выходной буфер
         status = WdfRequestRetrieveOutputBuffer(Request,
             sizeof(struct IsaIoResponse),
             &outputBuffer,
@@ -116,7 +110,6 @@ VOID HandleIOCTL(
 
         PVOID buffer = NULL;
 
-        // Получаем указатель на буфер с входными данными
         status = WdfRequestRetrieveInputBuffer(
             Request,
             sizeof(struct IsaIoRequestWrite),
@@ -124,8 +117,7 @@ VOID HandleIOCTL(
             &length
         );
 
-        // Проверка на то, что мы получили буфер и он соотвествует ожидаемому размеру
-        // Очень важно делать такие проверки, чтобы не положить систему :)
+
         if (length != sizeof(struct IsaIoRequestWrite) || !buffer)
         {
             status = STATUS_INVALID_DEVICE_REQUEST;
@@ -190,7 +182,6 @@ IsaIoEvtDeviceAdd(
         return status;
     }
 
-    // Allocate the device object
     WDFDEVICE hDevice;
 
     // Create the device object
@@ -213,21 +204,16 @@ IsaIoEvtDeviceAdd(
     WDF_IO_QUEUE_CONFIG  ioQueueConfig;
     WDFQUEUE  hQueue;
 
-    // Инициализируем настройки очереди, в которую будут помещаться запросы
-    // Параметр WdfIoQueueDispatchSequential говорит то, что запросы будут обрабатываться
-    // по одному в порядке очереди
     WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(
         &ioQueueConfig,
         WdfIoQueueDispatchSequential
     );
 
-    // Обработчик HandleIOCTL будет вызываться в ответ на функцию DeiviceIOControl
-    // Уже скоро мы создадим его
+
     ioQueueConfig.EvtIoDeviceControl = HandleIOCTL;
 
-    // Создаём очередь
     status = WdfIoQueueCreate(
-        hDevice,    // Объект устройства уже должен существовать
+        hDevice,
         &ioQueueConfig,
         WDF_NO_OBJECT_ATTRIBUTES,
         &hQueue
