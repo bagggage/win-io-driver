@@ -8,9 +8,9 @@ that it's pretty unsafe, but in fact it doesn't.
 
 So if you don't have ability to compile driver by itself, you can install it like so:
 
-- Open `ISAIODriver.cer` file and sign it.
 - Run `cmd` as **Administrator**.
     - Enter `bcdedit /set testsigning on` to make able to install driver with test certificate.
+- Open `ISAIODriver.cer` file and sign it.
 - Reboot computer.
 - Run `install.bat` and confirm installation.
 
