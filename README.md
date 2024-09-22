@@ -14,7 +14,7 @@ Driver registers device and link it to a file named `ISA-IO`.
 You might open it and then can use `IOCTL_*` commands to get access to the `in`/`out`. 
 
 Step-by-step:
-- Include header file `ISA_IO.h` into your userspace program.
+- Copy and include header file `ISA_IO.h` into your userspace program.
 - Open device handle like this:
   
   ```C
