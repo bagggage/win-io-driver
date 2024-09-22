@@ -8,6 +8,8 @@ It provides 2 operations:
 
 # Usage
 
+Before, you have to compile or install driver. See [installation guide](/install/INSTAL.md).
+
 Driver registers device and link it to a file named `ISA-IO`.
 You might open it and then can use `IOCTL_*` commands to get access to the `in`/`out`. 
 
