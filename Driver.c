@@ -9,13 +9,6 @@ EVT_WDF_DRIVER_DEVICE_ADD IsaIoEvtDeviceAdd;
 extern unsigned int IsaReadDword(unsigned short);
 extern unsigned int IsaWriteDword(unsigned short, unsigned int);
 
-VOID
-DriverUnload(
-)
-{
-    KdPrint(("ISA IO: Exit\n"));
-}
-
 NTSTATUS
 DriverEntry(
     _In_ PDRIVER_OBJECT     DriverObject,
