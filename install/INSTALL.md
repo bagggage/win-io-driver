@@ -12,7 +12,7 @@ So if you don't have ability to compile driver by itself, you can install it lik
     - Enter `bcdedit /set testsigning on` to make able to install driver with test certificate.
 - Open `ISAIODriver.cer` file and sign it.
 - Reboot computer.
-- Run `install.bat` and confirm installation.
+- Run `install.bat` as **Administrator** and confirm installation.
 
 Done!
 
