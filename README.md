@@ -24,7 +24,7 @@ For memory mapped i/o the driver provides mapping and read/write operations.
 Before, you have to compile or install driver. See [installation guide](/install/INSTALL.md).
 
 Driver registers device and link it to a file named `ISA-IO`.
-You might open it and then can use `IOCTL_*` commands to get access to the `in`/`out`. 
+You might open it and then can use `IOCTL_*` commands to get access to the I/O ports and MMIO. 
 
 Step-by-step:
 - Include `Windows.h`.
