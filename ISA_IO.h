@@ -51,7 +51,7 @@ struct IoResponseMmap {
 
 #ifndef KERNEL_SPACE
 
-unsigned int IsaIoRead(HANDLE hDevice, unsigned short port) {
+static unsigned int IsaIoRead(HANDLE hDevice, unsigned short port) {
 	struct IsaIoRequestRead request;
 	struct IsaIoResponse response;
 	request.port = port;
@@ -66,7 +66,7 @@ unsigned int IsaIoRead(HANDLE hDevice, unsigned short port) {
 	return response.value;
 }
 
-bool IsaIoWrite(HANDLE hDevice, unsigned short port, unsigned int value) {
+static bool IsaIoWrite(HANDLE hDevice, unsigned short port, unsigned int value) {
 	struct IsaIoRequestWrite request;
 	request.port = port;
 	request.value = value;
@@ -74,7 +74,7 @@ bool IsaIoWrite(HANDLE hDevice, unsigned short port, unsigned int value) {
 	return DeviceIoControl(hDevice, IOCTL_ISA_WRITE_32, &request, sizeof(request), NULL, 0, NULL, NULL);
 }
 
-unsigned int MmIoRead(HANDLE hDevice, void* address) {
+static unsigned int MmIoRead(HANDLE hDevice, void* address) {
 	struct IoRequestRead request;
 	IoResponse response;
 
@@ -90,7 +90,7 @@ unsigned int MmIoRead(HANDLE hDevice, void* address) {
 	return response.value;
 }
 
-bool MmIoWrite(HANDLE hDevice, void* address, unsigned int value) {
+static bool MmIoWrite(HANDLE hDevice, void* address, unsigned int value) {
 	struct IoRequestWrite request;
 	request.virt = address;
 	request.value = value;
@@ -98,7 +98,7 @@ bool MmIoWrite(HANDLE hDevice, void* address, unsigned int value) {
 	return DeviceIoControl(hDevice, IOCTL_MMIO_WRITE_32, &request, sizeof(request), NULL, 0, NULL, NULL);
 }
 
-void* MmIoMmap(HANDLE hDevice, void* physical, unsigned int size) {
+static void* MmIoMmap(HANDLE hDevice, void* physical, unsigned int size) {
 	struct IoRequestMmap request;
 	struct IoResponseMmap response;
 	request.phys = physical;
@@ -114,7 +114,7 @@ void* MmIoMmap(HANDLE hDevice, void* physical, unsigned int size) {
 	return response.virt;
 }
 
-bool MmIoUnmap(HANDLE hDevice, void* virt, unsigned int size) {
+static bool MmIoUnmap(HANDLE hDevice, void* virt, unsigned int size) {
 	struct IoRequestUnmap request;
 	request.virt = virt;
 	request.size = size;
