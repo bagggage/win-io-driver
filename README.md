@@ -2,11 +2,10 @@
 
 ## I/O Ports
 
-This driver provides a wrapper for `in`/`out` cpu instructions.
+The driver provides a wrapper for `in`/`out` cpu instructions.
 
-It provides 2 operations:
-- *Read*: `in` instruction wrapper
-- *Write*: `out` instruction wrapper
+- *IsaIoRead*: `in` instruction wrapper
+- *IsaIoWrite*: `out` instruction wrapper
 
 ## Memory-mapped I/O
 
