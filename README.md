@@ -27,7 +27,7 @@ You might open it and then can use `IOCTL_*` commands to get access to the I/O p
 
 Step-by-step:
 - Include `Windows.h`.
-- Copy and include header file `ISA_IO.h` into your userspace program.
+- Copy and include header file `IO.h` into your userspace program.
 - Open device handle like this:
   
   ```C
@@ -45,22 +45,24 @@ Step-by-step:
 
 ## Manual use
 
-- ISA I/O write (`IOCTL_ISA_WRITE_32`):
+- Ports I/O write (`IOCTL_PIO_WRITE`):
 
   ```C
   IsaIoRequestWrite request;
   request.port = ...;
   request.value = ...;
+  request.size = ...; // Can be `IO_BYTE`, `IO_WORD`, `IO_DWORD`.
 
-  DeviceIoControl(hDevice, IOCTL_ISA_WRITE_32, &request, sizeof(request), NULL, 0, NULL, NULL);
+  DeviceIoControl(hDevice, IOCTL_PIO_WRITE, &request, sizeof(request), NULL, 0, NULL, NULL);
   ```
-- ISA I/O read (`IOCTL_ISA_READ_32`):
+- Ports I/O read (`IOCTL_PIO_READ`):
   ```C
   IsaIoRequestRead request;
   request.port = ...;
+  request.size = ...; // Can be `IO_BYTE`, `IO_WORD`, `IO_DWORD`.
 
   IsaIoResponse response = { 0 };
-  DeviceIoControl(hDevice, IOCTL_ISA_READ_32, &request, sizeof(request), &response, sizeof(response), NULL, NULL);
+  DeviceIoControl(hDevice, IOCTL_PIO_READ, &request, sizeof(request), &response, sizeof(response), NULL, NULL);
 
   // Access result
   ... = response.value;
@@ -115,13 +117,13 @@ Step-by-step:
 
 ## API
 
-These functions are provided in `ISA_IO.h`, their prototypes are provided here for a quick look.
+These functions are provided in `IO.h`, their prototypes are provided here for a quick look.
 
 - ```C++
-  unsigned int IsaIoRead(HANDLE hDevice, unsigned short port)
+  unsigned int PortsIoRead(HANDLE hDevice, unsigned short port, IoSize size)
   ```
 - ```C++
-  bool IsaIoWrite(HANDLE hDevice, unsigned short port, unsigned int value)
+  bool PortsIoWrite(HANDLE hDevice, unsigned short port, unsigned int value, IoSize size)
   ```
 - ```C++
   void* MmIoMmap(HANDLE hDevice, void* physical, unsigned int size)

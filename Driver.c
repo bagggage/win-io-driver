@@ -3,13 +3,10 @@
 
 #define KERNEL_SPACE
 
-#include "ISA_IO.h"
+#include "IO.h"
 
 DRIVER_INITIALIZE DriverEntry;
 EVT_WDF_DRIVER_DEVICE_ADD IsaIoEvtDeviceAdd;
-
-extern unsigned int IsaReadDword(unsigned short);
-extern void IsaWriteDword(unsigned short, unsigned int);
 
 NTSTATUS
 DriverEntry(
@@ -78,44 +75,74 @@ VOID HandleIOCTL(
 
     switch (IoControlCode)
     {
-    case IOCTL_ISA_READ_32: {
-        struct IsaIoRequestRead request_data = { 0 };
-        struct IsaIoResponse* response_data = { 0 };
+    case IOCTL_PIO_READ: {
+        struct PortsIoRequestRead request_data = { 0 };
+        struct PortsIoResponse* response_data = { 0 };
 
-        PVOID buffer = GetInputBuffer(Request, sizeof(struct IsaIoRequestRead));
-        PVOID outputBuffer = GetOutputBuffer(Request, sizeof(struct IsaIoResponse));
+        PVOID buffer = GetInputBuffer(Request, sizeof(struct PortsIoRequestRead));
+        PVOID outputBuffer = GetOutputBuffer(Request, sizeof(struct PortsIoResponse));
 
         if (!buffer || !outputBuffer) {
             status = STATUS_INVALID_DEVICE_REQUEST;
             break;
         }
 
-        request_data = *((struct IsaIoRequestRead*)buffer);
-        response_data = (struct IsaIoResponse*)buffer;
+        request_data = *((struct PortsIoRequestRead*)buffer);
+        response_data = (struct PortsIoResponse*)outputBuffer;
 
-        KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "ISA IO: Read: 0x%x\n", request_data.port));
+        KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "PIO: Read: 0x%x\n", request_data.port));
 
         // Read ISA IO and put result into a buffer
-        response_data->value = IsaReadDword(request_data.port);
-        returnBytes = sizeof(struct IsaIoResponse);
+        switch (request_data.size)
+        {
+        case IO_BYTE:
+            response_data->value = __inbyte(request_data.port);
+            break;
+        case IO_WORD:
+            response_data->value = __inword(request_data.port);
+            break;
+        case IO_DWORD:
+            response_data->value = __indword(request_data.port);
+            break;
+        default:
+            goto bad_input;
+        }
+
+        returnBytes = sizeof(struct PortsIoResponse);
 
         break;
     }
-    case IOCTL_ISA_WRITE_32: {
-        struct IsaIoRequestWrite request_data = { 0 };
+    case IOCTL_PIO_WRITE: {
+        struct PortsIoRequestWrite request_data = { 0 };
 
-        PVOID buffer = GetInputBuffer(Request, sizeof(struct IsaIoRequestWrite));
+        PVOID buffer = GetInputBuffer(Request, sizeof(struct PortsIoRequestWrite));
         if (!buffer) {
             status = STATUS_INVALID_DEVICE_REQUEST;
             break;
         }
 
-        request_data = *((struct IsaIoRequestWrite*)buffer);
+        request_data = *((struct PortsIoRequestWrite*)buffer);
 
-        KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "ISA IO: Write: 0x%x = 0x%x\n", request_data.port, request_data.value));
+        KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "PIO: Write: 0x%x = 0x%x\n", request_data.port, request_data.value));
 
-        // Write ISA IO
-        IsaWriteDword(request_data.port, request_data.value);
+        // Write PIO
+        switch (request_data.size)
+        {
+        case IO_BYTE:
+            __outbyte(request_data.port, (UCHAR)request_data.value);
+            break;
+        case IO_WORD:
+            __outword(request_data.port, (USHORT)request_data.value);
+            break;
+        case IO_DWORD:
+            __outdword(request_data.port, request_data.value);
+            break;
+        case IO_QWORD:
+            break;
+        default:
+            goto bad_input;
+            break;
+        }
 
         break;
     }
@@ -189,6 +216,7 @@ VOID HandleIOCTL(
     }
     default:
     {
+    bad_input:
         status = STATUS_INVALID_DEVICE_REQUEST;
         break;
     }

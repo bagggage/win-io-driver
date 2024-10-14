@@ -123,10 +123,7 @@
     <ClCompile Include="Driver.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ISA_IO.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="IO.asm" />
+    <ClInclude Include="IO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
