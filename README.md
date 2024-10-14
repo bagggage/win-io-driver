@@ -1,11 +1,11 @@
-# ISA IO Windows Kernel Driver for x86/x86-64 CPUs
+# IO Windows Kernel Driver for x86/x86-64 CPUs
 
 ## I/O Ports
 
 The driver provides a wrapper for `in`/`out` cpu instructions.
 
-- *IsaIoRead*: `in` instruction wrapper
-- *IsaIoWrite*: `out` instruction wrapper
+- *PortsIoRead*: `in` instruction wrapper
+- *PortsWrite*: `out` instruction wrapper
 
 ## Memory-mapped I/O
 
