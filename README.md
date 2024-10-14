@@ -48,7 +48,7 @@ Step-by-step:
 - Ports I/O write (`IOCTL_PIO_WRITE`):
 
   ```C
-  IsaIoRequestWrite request;
+  PortsIoRequestWrite request;
   request.port = ...;
   request.value = ...;
   request.size = ...; // Can be `IO_BYTE`, `IO_WORD`, `IO_DWORD`.
@@ -57,11 +57,11 @@ Step-by-step:
   ```
 - Ports I/O read (`IOCTL_PIO_READ`):
   ```C
-  IsaIoRequestRead request;
+  PortsIoRequestRead request;
   request.port = ...;
   request.size = ...; // Can be `IO_BYTE`, `IO_WORD`, `IO_DWORD`.
 
-  IsaIoResponse response = { 0 };
+  PortsIoResponse response = { 0 };
   DeviceIoControl(hDevice, IOCTL_PIO_READ, &request, sizeof(request), &response, sizeof(response), NULL, NULL);
 
   // Access result
